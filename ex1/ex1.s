@@ -82,6 +82,21 @@
 	      .type   _reset, %function
         .thumb_func
 _reset: 
+		 
+		 // Enable output
+		 ldr r1, #0x2
+		 ldr r2, GPIO_PA_CTRL
+		 str r1, [r2,#0]
+		
+		 str r1, #0x55555555
+		 str r2, GPIO_PA_MODEH 
+		 str r1,[r2,#0]
+		 
+		 
+		 
+		 // Enable input
+		 
+		 
 	      b .  // do nothing
 	
 	/////////////////////////////////////////////////////////////////////////////
@@ -93,7 +108,7 @@ _reset:
 	
         .thumb_func
 gpio_handler:  
-
+		
 	      b .  // do nothing
 	
 	/////////////////////////////////////////////////////////////////////////////
