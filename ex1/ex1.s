@@ -93,7 +93,9 @@ _reset:
 		 str r1,[r2,#0] // set pushpulldrive bit 8-15 port A
 		 
 		 
-		 
+		 ldr r1, #0x00000000
+		 ldr r2, GPIO_PA_DOUT
+		 str r1,[r2,#0]
 		 
 		 
 		 
