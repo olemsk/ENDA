@@ -116,6 +116,7 @@ _reset:
 		 ldr r2, GPIO_PA_DOUT
 		 str r1,[r2,#0]
 		 
+		 
 cmu_base_addr:
 		 .long CMU_BASE
 		 
