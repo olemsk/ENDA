@@ -84,13 +84,13 @@
 _reset: 
 		 
 		 // Enable output
-		 ldr r1, #0x2
-		 ldr r2, GPIO_PA_CTRL
-		 str r1, [r2,#0]
+		 ldr r1, #0x2 //drive strength
+		 ldr r2, GPIO_PA_CTRL // ctrl_register adress
+		 str r1, [r2,#0] // load drive strength into ctrl_register
 		
-		 str r1, #0x55555555
-		 str r2, GPIO_PA_MODEH 
-		 str r1,[r2,#0]
+		 ldr r1, #0x55555555 // set pushpulldrive
+		 ldr r2, GPIO_PA_MODEH //adress for setting bit 8-15 port A
+		 str r1,[r2,#0] // set pushpulldrive bit 8-15 port A
 		 
 		 
 		 
