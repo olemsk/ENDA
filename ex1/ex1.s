@@ -83,6 +83,25 @@
         .thumb_func
 _reset: 
 		 
+		 CMU_BASE=0x400c8000 //base address of CMU
+		 CMU_HFPERCLKENO=0x044 // offset from base
+		 CMU_HFPERCLKEN0_GPIO =13 // BIT REPRESENTING GPIO
+		 
+		 // load CMU base address
+		 ldr r1, cmu_base_addr
+		 
+		 // load current value of HFPERCLK ENABLE
+		 ldr r2, [r1, #CMU_HFPERCLKKENO]
+		 
+		 // set bit for GPIO clk
+		 mov r3, #1
+		 lsl r3, r3, #CMU_HFPERCLKKEN0_GPIO
+		 orr r2, r2, r3
+		 
+		 // store new value
+		 str r2, [r1, # CMU_HFPERCLK0]
+		 
+		 
 		 // Enable output
 		 ldr r1, #0x2 //drive strength
 		 ldr r2, GPIO_PA_CTRL // ctrl_register adress
@@ -97,6 +116,8 @@ _reset:
 		 ldr r2, GPIO_PA_DOUT
 		 str r1,[r2,#0]
 		 
+cmu_base_addr:
+		 .long CMU_BASE
 		 
 		 
 		 // Enable input
