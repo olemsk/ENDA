@@ -108,13 +108,13 @@ _reset:
 		 str r1, [r2,#0] // load drive strength into ctrl_register
 		
 		 ldr r1, #0x55555555 // set pushpulldrive
-		 ldr r2, GPIO_PA_MODEH //adress for setting bit 8-15 port A
-		 str r1,[r2,#0] // set pushpulldrive bit 8-15 port A
+		 ldr r3, GPIO_PA_MODEH //adress for setting bit 8-15 port A
+		 str r1,[r2,r3] // set pushpulldrive bit 8-15 port A
 		 
 		 
 		 ldr r1, #0x00000000
-		 ldr r2, GPIO_PA_DOUT
-		 str r1,[r2,#0]
+		 ldr r3, GPIO_PA_DOUT
+		 str r1,[r2,r3]
 		 
 		 
 cmu_base_addr:
