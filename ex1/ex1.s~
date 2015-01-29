@@ -83,62 +83,38 @@
         .thumb_func
 _reset: 
 		 
+		 CMU_BASE=0x400c8000 //base address of CMU
+		 CMU_HFPERCLKENO=0x044 // offset from base
+		 CMU_HFPERCLKEN0_GPIO =13 // BIT REPRESENTING GPIO
+		 
 		 // load CMU base address
 		 ldr r1, cmu_base_addr
 		 
 		 // load current value of HFPERCLK ENABLE
-		 ldr r2, [r1, #CMU_HFPERCLKEN0]
+		 ldr r2, [r1, #CMU_HFPERCLKKENO]
 		 
 		 // set bit for GPIO clk
 		 mov r3, #1
-		 lsl r3, r3, #13
+		 lsl r3, r3, #CMU_HFPERCLKKEN0_GPIO
 		 orr r2, r2, r3
 		 
 		 // store new value
-		 str r2, [r1, #CMU_HFPERCLKEN0]
+		 str r2, [r1, # CMU_HFPERCLK0]
 		 
 		 
 		 // Enable output
-		 mov r1, #0x2 //drive strength
-		 ldr r2, =GPIO_PA_BASE // ctrl_register adress
-		 str r1, [r2,#GPIO_CTRL] // load drive strength into ctrl_register
+		 ldr r1, #0x2 //drive strength
+		 ldr r2, GPIO_PA_CTRL // ctrl_register adress
+		 str r1, [r2,#0] // load drive strength into ctrl_register
 		
-		 ldr r1, =0x55555555 // set pushpulldrive
-
-		 str r1,[r2,#GPIO_MODEH] // set pushpulldrive bit 8-15 port A
+		 ldr r1, #0x55555555 // set pushpulldrive
+		 ldr r3, GPIO_PA_MODEH //adress for setting bit 8-15 port A
+		 str r1,[r2,r3] // set pushpulldrive bit 8-15 port A
 		 
 		 
-		 
-		 
-		 mov r1, #0xFF00   //value to set lights all off
-		 str r1,[r2,#GPIO_DOUT] // Set lights off
-
-		 ldr r3, =0x33333333  // value to set pin 0-7 to input
-		 ldr r4, =GPIO_PC_BASE // value of GPIO_PC_BASE
-		 str r3, [r4, #GPIO_MODEL] // Set pin 0-7 to input
-
-		 mov r3, #0xFF  // Value for enabling internal pull-up
-		 str r3, [r4, #GPIO_DOUT] //set enable internal pull-up
-
-loop:	
-		 ldr r3, [r4, #GPIO_DIN] // load value from keyboard
-		 lsl r3, r3, #8 // leftshift 8 places
-		 str r3, [r2, #GPIO_DOUT] // store value in PA_DOUT, setting value of ligth to 0-enabling light
-		 b loop // branch to 'loop', 
-		 
-
-
-	
-		// Enable output
-		// mov r1, #0x2 //drive strength
-		// ldr r2, =GPIO_PA_BASE // ctrl_register adress
-		// str r1, [r2,#GPIO_CTRL] // load drive strength into ctrl_register
-		
-		// ldr r1, =0x55555555 // set pushpulldrive
-
-		// str r1,[r2,#GPIO_MODEH] // set pushpulldrive bit 8-15 port A
-		// mov r1, #0xFE00
-		// str r1,[r2,#GPIO_DOUT]
+		 ldr r1, #0x00000000
+		 ldr r3, GPIO_PA_DOUT
+		 str r1,[r2,r3]
 		 
 		 
 cmu_base_addr:
