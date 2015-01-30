@@ -100,7 +100,7 @@ _reset:
 		 ldr r1, =GPIO_BASE
 		 ldr r2, =0x22222222
 		 str r2, [r1, GPIO_EXTIPSELL]
-		 mov r2, 0xFF
+		 mov r2, #0xFF
 		 str r2, [r1, GPIO_EXTIFALL]
 		 str r2, [r1, GPIO_EXTIRISE]
 		 str r2, [r1, GPIO_IEN]
@@ -108,7 +108,8 @@ _reset:
 		 ldr r3, =ISER0
 		 ldr r2, =0x802
 		 str r2, [r3, #0]
-		
+
+		 wfi
 
 	
 		
@@ -142,20 +143,21 @@ gpio_handler:
 		 str r1, [r2,#GPIO_CTRL] // load drive strength into ctrl_register
 		
 		 ldr r1, =0x55555555 // set pushpulldrive
-
+		 
 		 str r1,[r2,#GPIO_MODEH] // set pushpulldrive bit 8-15 port A
 		 
 		 
 		 
 		 lsl r4, r6, #8
-		 ldr r7, =0xFF00
-		 eor r4, r4,r7
+		// ldr r7, =0xFF00
+		// eor r4, r4,r7
 		// mov r1, #0x0000   //value to set lights all on
 		 str r4,[r2,#GPIO_DOUT] // Set lights on
-
+		 
 		 str r6,[r5, GPIO_IFC]
 		 ldr r3, =ISER0
 		 ldr r2, =0x802
+		 
 		 str r2, [r3, #0]
 	
 	/////////////////////////////////////////////////////////////////////////////
