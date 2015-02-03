@@ -83,36 +83,38 @@
         .thumb_func
 _reset: 
 		 
+		 CMU_BASE=0x400c8000 //base address of CMU
+		 CMU_HFPERCLKENO=0x044 // offset from base
+		 CMU_HFPERCLKEN0_GPIO =13 // BIT REPRESENTING GPIO
+		 
 		 // load CMU base address
 		 ldr r1, cmu_base_addr
 		 
 		 // load current value of HFPERCLK ENABLE
-		 ldr r2, [r1, #CMU_HFPERCLKEN0]
+		 ldr r2, [r1, #CMU_HFPERCLKKENO]
 		 
 		 // set bit for GPIO clk
 		 mov r3, #1
-		 lsl r3, r3, #13
+		 lsl r3, r3, #CMU_HFPERCLKKEN0_GPIO
 		 orr r2, r2, r3
 		 
 		 // store new value
-		 str r2, [r1, #CMU_HFPERCLKEN0]
+		 str r2, [r1, # CMU_HFPERCLK0]
 		 
-		 ldr r1, =GPIO_BASE
-		 ldr r2, =0x22222222
-		 str r2, [r1, GPIO_EXTIPSELL]
-		 mov r2, #0xFF
-		 str r2, [r1, GPIO_EXTIFALL]
-		 str r2, [r1, GPIO_EXTIRISE]
-		 str r2, [r1, GPIO_IEN]
-
-		 ldr r3, =ISER0
-		 ldr r2, =0x802
-		 str r2, [r3, #0]
-
-		 wfi
-
-	
+		 
+		 // Enable output
+		 ldr r1, #0x2 //drive strength
+		 ldr r2, GPIO_PA_CTRL // ctrl_register adress
+		 str r1, [r2,#0] // load drive strength into ctrl_register
 		
+		 ldr r1, #0x55555555 // set pushpulldrive
+		 ldr r3, GPIO_PA_MODEH //adress for setting bit 8-15 port A
+		 str r1,[r2,r3] // set pushpulldrive bit 8-15 port A
+		 
+		 
+		 ldr r1, #0x00000000
+		 ldr r3, GPIO_PA_DOUT
+		 str r1,[r2,r3]
 		 
 		 
 cmu_base_addr:
@@ -132,33 +134,9 @@ cmu_base_addr:
 	/////////////////////////////////////////////////////////////////////////////
 	
         .thumb_func
-gpio_handler:
-		 ldr r5, =GPIO_BASE
-		 ldr r6, [r5, GPIO_IF]
-		 
+gpio_handler:  
 		
-		 // Enable output
-		 mov r1, #0x2 //drive strength
-		 ldr r2, =GPIO_PA_BASE // ctrl_register adress
-		 str r1, [r2,#GPIO_CTRL] // load drive strength into ctrl_register
-		
-		 ldr r1, =0x55555555 // set pushpulldrive
-		 
-		 str r1,[r2,#GPIO_MODEH] // set pushpulldrive bit 8-15 port A
-		 
-		 
-		 
-		 lsl r4, r6, #8
-		// ldr r7, =0xFF00
-		// eor r4, r4,r7
-		// mov r1, #0x0000   //value to set lights all on
-		 str r4,[r2,#GPIO_DOUT] // Set lights on
-		 
-		 str r6,[r5, GPIO_IFC]
-		 ldr r3, =ISER0
-		 ldr r2, =0x802
-		 
-		 str r2, [r3, #0]
+	      b .  // do nothing
 	
 	/////////////////////////////////////////////////////////////////////////////
 	
