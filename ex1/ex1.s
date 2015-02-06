@@ -82,7 +82,7 @@
 	      .type   _reset, %function
         .thumb_func
 _reset: 
-		 
+		//----------------------------- From Compendium -----------------------
 		 // load CMU base address
 		 ldr r1, cmu_base_addr
 		 
@@ -96,7 +96,9 @@ _reset:
 		 
 		 // store new value
 		 str r2, [r1, #CMU_HFPERCLKEN0]
-
+		
+		
+		//----------------------------- Self-written code------------------------------------
 		  // Enable output
 		 mov r1, #0x2 //drive strength
 		 ldr r2, =GPIO_PA_BASE // ctrl_register adress
@@ -124,15 +126,15 @@ _reset:
 		 str r2, [r1, GPIO_EXTIRISE] // Enable 0->1 transistion
 		 str r2, [r1, GPIO_IEN]      // Enable interrupt generation 
 
-		 ldr r3, =ISER0 
+		 ldr r3, =ISER0  
 		 ldr r2, =0x802
 		 str r2, [r3, #0] // Enable interrupt handling 
 
-		 ldr r1, =SCR     // 
-		 mov r2, #6	  //
+		 ldr r1, =SCR     // Address of System Control Register
+		 mov r2, #6	  // 
 		 str r2,[r1,#0]	  // Set energymode to EM2
 
-		 wfi
+		 wfi   // Wait for interrupt
 
 	
 		
@@ -146,7 +148,7 @@ _reset:
 	
         .thumb_func
 gpio_handler:
-		 ldr r5, =GPIO_BASE
+		 ldr r5, =GPIO_BASE 
 		 ldr r6, [r5, GPIO_IF]
 		 str r6,[r5, GPIO_IFC]
 		 
@@ -165,7 +167,7 @@ gpio_handler:
 		 
 
 	
-		bx lr
+		bx lr  // Jump to link register
 		 
 		 
 cmu_base_addr:
