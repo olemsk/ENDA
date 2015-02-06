@@ -108,28 +108,29 @@ _reset:
 	
 		 
 		 ldr r3, =0x33333333  // value to set pin 0-7 to input
-		 ldr r4, =GPIO_PC_BASE // value of GPIO_PC_BASE
+		 ldr r4, =GPIO_PC_BASE // value of register address of GPIO_PC_BASE
 		 str r3, [r4, #GPIO_MODEL] // Set pin 0-7 to input
 
 		 mov r3, #0xFF  // Value for enabling internal pull-up
 		 str r3, [r4, #GPIO_DOUT] //set enable internal pull-up
 		 
-	
+		 //Enable GPIO interrupts
+		 
 		 ldr r1, =GPIO_BASE
-		 ldr r2, =0x22222222
-		 str r2, [r1, GPIO_EXTIPSELL]
-		 mov r2, #0xFF
-		 str r2, [r1, GPIO_EXTIFALL]
-		 str r2, [r1, GPIO_EXTIRISE]
-		 str r2, [r1, GPIO_IEN]
+		 ldr r2, =0x22222222 //Value to set Port C to input 
+		 str r2, [r1, GPIO_EXTIPSELL] // Store 
+		 mov r2, #0xFF 
+		 str r2, [r1, GPIO_EXTIFALL] // Enable 1->0 transistion 
+		 str r2, [r1, GPIO_EXTIRISE] // Enable 0->1 transistion
+		 str r2, [r1, GPIO_IEN]      // Enable interrupt generation 
 
-		 ldr r3, =ISER0
+		 ldr r3, =ISER0 
 		 ldr r2, =0x802
-		 str r2, [r3, #0]
+		 str r2, [r3, #0] // Enable interrupt handling 
 
-		 ldr r1, =SCR
-		 mov r2, #6
-		 str r2,[r1,#0]
+		 ldr r1, =SCR     // 
+		 mov r2, #6	  //
+		 str r2,[r1,#0]	  // Set energymode to EM2
 
 		 wfi
 
