@@ -10,7 +10,7 @@
   registers are 16 bits.
 */
 /* The period between sound samples, in clock cycles */
-#define   SAMPLE_PERIOD   1000
+#define   SAMPLE_PERIOD   317
 
 
 
@@ -18,6 +18,7 @@
 void setupTimer(uint32_t period);
 void setupDAC();
 void setupNVIC();
+void play_sound(uint32_t sound);
 
 /* Your code will start executing here */
 int main(void) 
