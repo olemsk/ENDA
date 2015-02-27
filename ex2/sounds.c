@@ -57,11 +57,7 @@ int play_sound(uint32_t sound)
     
   *DAC0_CH0DATA ^= TEMP;
   *DAC0_CH1DATA ^= TEMP;
-  // for (int j=0; j < 1; j++)
-  // {}
-  //*DAC0_CH0DATA ^=TEMP;
-  //*DAC0_CH1DATA ^=TEMP;
-    
+ 
   
 
     }
@@ -165,10 +161,10 @@ int LTS_r[] = {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
    play_natal();
    break;
 
-   /*case 0xDF:
+   case 0xDF:
   play_LTS();
    break;
-   */
+   
  default:
    return;
  }
@@ -349,10 +345,17 @@ for(int i = 0; i < 600000; i++){
 }
 
 
-/*
+
 void play_LTS(void)
 {
 
+
+
+  *DAC0_CTRL = 0x50011;
+
+
+
+/* 
   int LTS_m[] = {Bb, G, G, Bb, G, G, Bb, ,G, G, Bb, G, G, Bb, G, C, G, Bb, G, G, Bb, G, G, Bb, G, G, Bb, G, G, Bb, G, F, D, F, D, G, F, D, C, Bb, G, Bb, C, C1, C, Bb, F, D, Bb, G, F, D, C, Bb, D, C, Bb, G};
 
 int LTS_r[] = {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4};
@@ -389,6 +392,9 @@ for(int i = 0; i < 600000; i++){
   *DAC0_CH0DATA = 0x00;
  *DAC0_CH1DATA = 0x00;
 
-}
-}
+ }
+
 */
+
+  }
+

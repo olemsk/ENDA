@@ -20,7 +20,7 @@ void play_mario(void);
 void play_peer_gynt(void);
 void play_smoke(void);
 void play_natal(void);
-//void play_LTS(void);
+void play_LTS(void);
 bool select_mode(uint32_t inn);
 
 
