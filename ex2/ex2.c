@@ -9,12 +9,12 @@
   from) runs at 14 MHz by default. Also remember that the timer counter
   registers are 16 bits.
 */
-/* The period between sound samples, in clock cycles */
+/* The period between sound samples, in clock cycles */ 
 #define   SAMPLE_PERIOD   317
 
 
 
-/* Declaration of peripheral setup functions */
+/* Declaration of peripheral setup functions */ 
 void setupTimer(uint32_t period);
 void setupDAC();
 void setupNVIC(); 
@@ -24,12 +24,12 @@ void play_sound(uint32_t sound);
 int main(void) 
 {  
   /* Call the peripheral setup functions */
-  setupGPIO();
+  setupGPIO(); 
   setupDAC();
   setupTimer(SAMPLE_PERIOD);
   
-  /* Enable interrupt handling */
-  setupNVIC();
+  /* Enable interrupt handling */ 
+  setupNVIC(); 
   
   /* TODO for higher ener gy efficiency, sleep while waiting for interrupts
      instead of infinite loop for busy-waiting
@@ -42,7 +42,7 @@ int main(void)
 
 void setupNVIC()
 {
-  /* TODO use the NVIC ISERx registers to enable handling of interrupt(s)
+  /* TODO use the NVIC ISERx registers  to enable handling of interrupt(s)
      remember two things are necessary for interrupt handling:
       - the peripheral must generate an interrupt signal
       - the NVIC must be con figured to make the CPU handle the signal
