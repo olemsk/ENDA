@@ -143,3 +143,15 @@
 #define SYSTICK_CTRL ((volatile uint32_t*)0xe000e010)
 #define SYSTICK_LOAD ((volatile uint32_t*)0xe000e014)
 
+// LETIMER
+
+#define LETIMER0_BASE 0x40082000
+#define LETIMER0_CTRL ((volatile uint32_t*)(LETIMER0_BASE + 0x000))
+#define LETIMER0_CMD ((volatile uint32_t*)(LETIMER0_BASE + 0x004))
+#define LETIMER0_IEN ((volatile uint32_t*)(LETIMER0_BASE + 0x02c))
+#define LETIMER0_IFC ((volatile uint32_t*)(LETIMER0_BASE + 0x028))
+#define LETIMER0_COMP0 ((volatile uint32_t*)(LETIMER0_BASE + 0x010))
+#define LETIMER0_CNT ((volatile uint32_t*)(LETIMER0_BASE + 0x00c))
+#define LETIMER0_IF ((volatile uint32_t*)(LETTIMER0_BASE + 0x020))
+
+

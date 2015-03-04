@@ -35,6 +35,23 @@ bool select_mode(uint32_t inn);
 
 
 
+/* LETIMER0 interupt handler */
+void __attribute__((interrupt)) LETIMER0_IRQHandler() {
+	*LETIMER0_IFC = 1;
+	
+  	if(var_2) {
+		*GPIO_PA_DOUT=*GPIO_PC_DIN <<8;
+  		play_sound(find_sound(*GPIO_PC_DIN));
+	}
+	else {
+  		*GPIO_PA_DOUT=0xFE;  
+  		control_music(*GPIO_PC_DIN);     
+	}
+}
+
+
+
+
 /* TIMER1 interrupt handler */
 void __attribute__ ((interrupt)) TIMER1_IRQHandler() 
 {  

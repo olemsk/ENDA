@@ -21,7 +21,7 @@ void setupNVIC();
 void play_sound(uint32_t sound);
 
 /* Your code will start executing here */
-int main(void) 
+int main(void)
 {  
   /* Call the peripheral setup functions */
   setupGPIO(); 
@@ -29,13 +29,13 @@ int main(void)
   setupTimer(SAMPLE_PERIOD);
   
   /* Enable interrupt handling */ 
-  setupNVIC(); 
+  setupNVIC();
   
   /* TODO for higher ener gy efficiency, sleep while waiting for interrupts
      instead of infinite loop for busy-waiting
   */
-  *SCR = 2;
-  
+  *SCR = 6; //Enable deep sleep
+  __asm__("wfi");
 
   return 0;
 }
@@ -54,7 +54,7 @@ void setupNVIC()
   *GPIO_EXTIFALL = 0xFF;
   *GPIO_EXTIRISE = 0xFF;
   *GPIO_IEN = 0xFF;
-  *ISER0 = 0x1802;
+  *ISER0 = 0x4000802;
   
   
 
