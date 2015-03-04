@@ -1,26 +1,36 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+
 #include "efm32gg.h"
+/*
+#include "Beep1.c"
+#include "Beep2.c"
+*/
 #include "sounds.c"
 
 
-
+#include "play_melody_2.c"
 
  
+bool play_beep_1(void);
+bool play_beep_2(void);
+/*
+void play_mcg(int counter);   
+*/
+void control_music(uint32_t song);  
+ 
+ 
+bool var_2 = true;
+uint32_t  var_1 = 0x000; 
 
 
-  uint32_t  var_1 = 0x000;
-bool var_2 = false;
+
+
+
 
 int find_sound(uint32_t inn);
-int play_sound(uint32_t sound);
-void play_melody(uint32_t sound);
-void play_mario(void);
-void play_peer_gynt(void);
-void play_smoke(void);
-void play_natal(void);
-void play_LTS(void);
+
 bool select_mode(uint32_t inn);
 
 
@@ -36,9 +46,11 @@ void __attribute__ ((interrupt)) TIMER1_IRQHandler()
  
   
   
+
+
+	
   if(var_2)
-{
-  *GPIO_PA_DOUT=*GPIO_PC_DIN <<8;
+ {  *GPIO_PA_DOUT=*GPIO_PC_DIN <<8;
   
   play_sound(find_sound(*GPIO_PC_DIN));
   
@@ -47,14 +59,19 @@ void __attribute__ ((interrupt)) TIMER1_IRQHandler()
 
   else
 {
-  *GPIO_PA_DOUT=0xFE;
-  play_melody(*GPIO_PC_DIN);
+  *GPIO_PA_DOUT=0xFE;  
+  control_music(*GPIO_PC_DIN);     
+   
 
+ 
+
+
+  
 
 }
 
   
-       
+	     
 
 }
 
@@ -71,7 +88,7 @@ void __attribute__ ((interrupt)) GPIO_EVEN_IRQHandler()
   *GPIO_IFC = *GPIO_IF;
   var_1 = find_sound((*GPIO_PC_DIN));
   var_2 ^= select_mode(*GPIO_PC_DIN);
-  *GPIO_PA_DOUT = *GPIO_PC_DIN << 8;
+  *GPIO_PA_DOUT = *GPIO_PC_DIN << 8; 
     
      
 }
