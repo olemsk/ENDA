@@ -24,7 +24,7 @@ void setupTimer(uint16_t period)
 
 //	*CMU_LFACLKEN0 = 0x4;
 //	*CMU_HFCORECLKEN0 = 0x10; // Low energy peripheral interface clock enable
-	*LETIMER0_COMP0 =32768/44100; // Top value, frequency =  
+	*LETIMER0_COMP0 =4; // Top value, frequency =  
 //	*LETIMER0_IEN = 1; // enable interrupt
 //	*LETIMER0_CMD = 0x1; // Start LETIMER0
 

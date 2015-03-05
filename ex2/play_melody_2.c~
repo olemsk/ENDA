@@ -49,18 +49,24 @@ bool play_beep_1(void)
 };
 
 
+
 /*bool play_beep_2(void)
 {
-	int length = 7585;
-  	if(counter == length-1){	
-		*DAC0_CH0DATA = 0 ;
-  		*DAC0_CH1DATA = 0;
-		counter = 0;
-      		return true;}
-	uint16_t  temp= Beep2[counter];	 
+
+int length = 7585;
+  if(counter == length-1)
+    {	*DAC0_CH0DATA = 0 ;
+  	*DAC0_CH1DATA = 0;
+	counter = 0;
+      return true;
+		
+    }
+  uint16_t  temp= Beep2[counter];
+	 
 	*DAC0_CH0DATA = temp ;
   	*DAC0_CH1DATA = temp;
 	counter +=1;
+	
 	return false;
 };
 */

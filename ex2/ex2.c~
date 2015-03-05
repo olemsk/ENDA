@@ -28,7 +28,7 @@ int main(void)
   	setupDAC();
   	setupTimer(SAMPLE_PERIOD);
   
-  /* Enable interrupt handling */  
+  /* Enable interrupt handling */ 
   	setupNVIC(); 
   
   /* TODO for higher ener gy efficiency, sleep while waiting for interrupts
