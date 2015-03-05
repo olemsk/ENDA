@@ -9,21 +9,19 @@
 */
 #include "sounds.c"
 
-
+void setupTimer(uint32_t period); 
 #include "test_make_melody.c"
-
+#define   SAMPLE_PERIOD   1709 
  
 bool play_beep_1(void);
 bool play_beep_2(void);
-/*
-void play_mcg(int counter);   
-*/
+
 void control_music(uint32_t inn);  
  
  
-bool var_2 = true;
+bool var_2 = false;
 uint32_t  var_1 = 0x000; 
-
+uint32_t song = 0;
 
 
 
@@ -36,18 +34,24 @@ bool select_mode(uint32_t inn);
 
 
 /* LETIMER0 interupt handler */
+/*
 void __attribute__((interrupt)) LETIMER0_IRQHandler() {
 	*LETIMER0_IFC = 1;
 	
+	*GPIO_PA_DOUT=0x00;
+	
   	if(var_2) {
-		*GPIO_PA_DOUT=*GPIO_PC_DIN <<8;
+		*GPIO_PA_DOUT=0xF0;
   		play_sound(find_sound(*GPIO_PC_DIN));}
 	else {
   		*GPIO_PA_DOUT=0xFE;  
-  		control_music(*GPIO_PC_DIN);}
+		control_music(song);
+  		}
+	
+	*LETIMER0_IFC = 1;
 };
 
-
+*/
 
 
 /* TIMER1 interrupt handler */
@@ -58,12 +62,10 @@ void __attribute__ ((interrupt)) TIMER1_IRQHandler()
     remember to clear the pending interrupt by writing 1 to TIMER1_IFC
   */  
 	*TIMER1_IFC = 1; 
-	if(var_2){  
-		*GPIO_PA_DOUT=*GPIO_PC_DIN <<8;  
-		play_sound(find_sound(*GPIO_PC_DIN));}
-	else{
-		*GPIO_PA_DOUT=0xFE;  
-		control_music(*GPIO_PC_DIN);}
+	startDAC();
+	
+		control_music(song);
+	
 };
 
 
@@ -75,11 +77,8 @@ int find_sound(uint32_t inn);
 void __attribute__ ((interrupt)) GPIO_EVEN_IRQHandler() 
 {
     /* TODO handle button pressed event, remember to clear pending interrupt */
-  
-	*GPIO_IFC = *GPIO_IF;
-	var_1 = find_sound((*GPIO_PC_DIN));
-  	var_2 ^= select_mode(*GPIO_PC_DIN);
-  	*GPIO_PA_DOUT = *GPIO_PC_DIN << 8; 
+  	
+	GPIO_handler();
 };
 
 
@@ -89,11 +88,10 @@ int find_sound(uint32_t inn);
 void __attribute__ ((interrupt)) GPIO_ODD_IRQHandler() 
 {
     /* TODO handle button pressed event, remember to clear pending interrupt */
-   
-	*GPIO_IFC = *GPIO_IF;
-  	var_1 = find_sound((*GPIO_PC_DIN));
-  	var_2 ^= select_mode(*GPIO_PC_DIN);
-   	*GPIO_PA_DOUT = *GPIO_PC_DIN << 8;
+   	
+	
+	GPIO_handler();
+
 };
 
 bool select_mode(uint32_t inn)
@@ -104,7 +102,52 @@ bool select_mode(uint32_t inn)
 };
 
 
+void GPIO_handler()
+{
+	
+switch (*GPIO_PC_DIN)
+{	
+	
 
+	case 0xFD:
+	*SCR=0x2;
+	setupTimer(SAMPLE_PERIOD);
+		//start_LET();
+		
+		song = 1;
+							
+		break;
+	
+	case 0xFB:
+	*SCR=0x2;
+	setupTimer(SAMPLE_PERIOD);
+		//start_LET();
+		
+		song = 2;
+	
+	
+		break;
+	case 0xF7:
+	*SCR=0x2;
+	setupTimer(SAMPLE_PERIOD);
+		//start_LET();
+		
+		song = 3;
+	
+	
+		break;
+
+	default:
+	song=0;
+	//stop_LET();
+	
+	break;
+
+}
+*GPIO_IFC=0xFF;
+
+
+}
 
 
 

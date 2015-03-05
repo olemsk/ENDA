@@ -1,42 +1,42 @@
 #include <stdint.h>   
 #include <stdbool.h>  
-
-#include "efm32gg.h"   
-       
-/*  
+ 
+#include "efm32gg.h"     
+        
+/*    
   TODO  caculate the   appropriate sample period for the sound wave(s) 
   you want to generate. The core cloc k (which the timer clock is derived
   from) runs at 14 MHz by default. Also remember that the timer counter
-  registers are 16 bits.  
-*/   
-/* The period between sound samp les, in clock cycles */ 
-#define   SAMPLE_PERIOD   317
-
- 
- 
-/* Declaration of peripheral setup functions */ 
-void setupTimer(uint32_t period);
-void setupDAC();
-void setupNVIC();
-void play_sound(uint32_t sound);
-
-/* Your code will start executing here */
-int main(void)
-{  
-  /* Call the peripheral setup functions */
-  	setupGPIO();  
-  	setupDAC();
-  	setupTimer(SAMPLE_PERIOD);
+  registers are 16 bits.        
+*/    
+/* The period between sound samp les, in clock cycles */         
+#define   SAMPLE_PERIOD   1709       
   
-  /* Enable interrupt handling */  
-  	setupNVIC(); 
+  
+       
+/* Declaration of peripheral setup functions */          
+void setupTimer(uint32_t period);  
+void stopDAC(); 
+void setupNVIC();  
+void play_sound(uint32_t sound);      
+  
+/* Your code will start executing here */  
+int main(void)
+{       
+  /* Call the peripheral setup functions */     
+  	setupGPIO();  
+  	stopDAC();  
+  	setupTimer(SAMPLE_PERIOD);    
+  
+  /* Enable interrupt handling */    
+  	setupNVIC();   
   
   /* TODO for higher ener gy efficiency, sleep while waiting for interrupts
      instead of infinite loop for busy-waiting
-  */
-  	*SCR = 6; //Enable deep sleep
-  	__asm__("wfi");
-	return 0;
+  */ 
+  	*SCR = 0x6; //Enable deep sleep      
+  	__asm("WFI");  
+	return 0; 
 };
 
 void setupNVIC()
@@ -48,15 +48,15 @@ void setupNVIC()
      You will need TIMER1, GPIO odd and GPIO even interrupt handling for this
      assignment.
   */
-
-  	*GPIO_EXTIPSELL = 0x22222222;
-  	*GPIO_EXTIFALL = 0xFF;
+ 
+  	*GPIO_EXTIPSELL = 0x22222222; 
+  	*GPIO_EXTIFALL = 0xFF; 
   	*GPIO_EXTIRISE = 0xFF;
-  	*GPIO_IEN = 0xFF;
-  	*ISER0 = 0x4000802;
+  	*GPIO_IEN = 0xFF; 
+  	*ISER0 = 0x1802; // TIMER1, GPIO_EVEN, GPIO_ODD interrupt //  0x4000802 for LETIMER interrupt
 };
 
-/* if other interrupt handlers are needed, use the following names: 
+/* if other interrupt handlers are needed, use the following names:  
    NMI_Handler
    HardFault_Handler
    MemManage_Handler

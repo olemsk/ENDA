@@ -59,6 +59,7 @@
 #define CMU_LFBCLKEN0	 ((volatile uint32_t*)(CMU_BASE2 + 0x060))
 #define CMU_LFCKSEL	 ((volatile uint32_t*)(CMU_BASE2 + 0x028))
 #define CMU_OSCENCMD	 ((volatile uint32_t*)(CMU_BASE2 + 0x020))
+#define CMU_LFAPRES0	 ((volatile uint32_t*)(CMU_BASE2 + 0x068))
 
 #define CMU2_HFPERCLKEN0_DAC0   (1 << 17)
 #define CMU2_HFPERCLKEN0_PRS    (1 << 15)
@@ -158,6 +159,7 @@
 #define LETIMER0_IFC ((volatile uint32_t*)(LETIMER0_BASE + 0x028))
 #define LETIMER0_COMP0 ((volatile uint32_t*)(LETIMER0_BASE + 0x010))
 #define LETIMER0_CNT ((volatile uint32_t*)(LETIMER0_BASE + 0x00c))
-#define LETIMER0_IF ((volatile uint32_t*)(LETTIMER0_BASE + 0x020))
+#define LETIMER0_IF ((volatile uint32_t*)(LETIMER0_BASE + 0x020))
+#define LETIMER0_REP0 ((volatile uint32_t*)(LETIMER0_BASE + 0x018))
 
 
