@@ -9,14 +9,14 @@
   from) runs at 14 MHz by default. Also remember that the timer counter
   registers are 16 bits.        
 */    
-/* The period between sound samp les, in clock cycles */          
-#define   SAMPLE_PERIOD   1709       
+/* The period between sound samp les, in clock cycles */             
+#define   SAMPLE_PERIOD   1709     // makes Fs approx. 8192   
   
   
        
 /* Declaration of peripheral setup functions */          
 void setupTimer(uint32_t period);  
-void stopDAC(); 
+void stopDAC();  
 void setupNVIC();  
 void play_sound(uint32_t sound);      
   
@@ -34,8 +34,11 @@ int main(void)
   /* TODO for higher ener gy efficiency, sleep while waiting for interrupts
      instead of infinite loop for busy-waiting
   */ 
+	
+	
   	*SCR = 0x6; //Enable deep sleep      
-  	__asm("WFI");  
+  	__asm("WFI");  //Wait for interrupt, go to deep sleep 
+	
 	return 0; 
 };
 

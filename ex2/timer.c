@@ -17,37 +17,14 @@ void setupTimer(uint16_t period)
     This will cause a timer interrupt to be generated every (period) cycles. Remember to configure the NVIC as well, otherwise the interrupt handler will not be invoked.
   */  
 
-    *CMU_HFPERCLKEN0 = *CMU_HFPERCLKEN0 | CMU2_HFPERCLKEN0_TIMER1; 
-    *TIMER1_TOP = period;
-    *TIMER1_IEN = 1;
-    *TIMER1_CMD = 1;
+    *CMU_HFPERCLKEN0 = *CMU_HFPERCLKEN0 | CMU2_HFPERCLKEN0_TIMER1; // Enable TimerA clock
+    *TIMER1_TOP = period;					// Compare TimerA value to period value, when equal-interrupt, set this to determin sampling frequency
+    *TIMER1_IEN = 1;						// Enable interrupt 
+    *TIMER1_CMD = 1;						// Start timer
 	
 	
 }
 
 
 
-void start_LET(void)
-{	
-	*CMU_HFCORECLKEN0 |= (1<<4);
-	*CMU_OSCENCMD = (1<<6); // Enable LFRCO
-	*CMU_LFACLKEN0 |= (1<<2); // Enable LEtimer0
-	*LETIMER0_CTRL |= (1<<9);
-	*LETIMER0_CTRL |=1; // Compare topvalue to LETIMER0_TOP
-	*LETIMER0_IEN = 1; // Enable LETimer0 interrupt
-	*LETIMER0_COMP0 = 4;
-	*LETIMER0_CMD = 1; // Enalbe LETimer0
-	*LETIMER0_REP0 = 0xFFFF; 
-	//*CMU_LFAPRES0 = 0x20;
 
-}
-
-void stop_LET(void)
-{	
-	*CMU_HFCORECLKEN0  &= ~(1<<4); 
-	*CMU_OSCENCMD = (1<<7); // Enable LFRCO
-	*CMU_LFACLKEN0  = 0; // Enable LEtimer0
-	*LETIMER0_IEN = 0; // Enable LETimer0 interrupt
-	*LETIMER0_CMD = 0;
-
-}

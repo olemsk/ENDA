@@ -22,21 +22,7 @@ void setupTimer(uint16_t period)
     *TIMER1_IEN = 1;
     *TIMER1_CMD = 1;
 	
-	/*
-	*CMU_LFACLKEN0 = 0x4;
-	*CMU_HFCORECLKEN0 = 0x10; // Low energy peripheral interface clock enable
-	*LETIMER0_COMP0 =32768/44100; // Top value, frequency =  
-	*LETIMER0_IEN = 1; // enable interrupt
-	*LETIMER0_CMD = 0x1; // Start LETIMER0
-	*CMU_LFAPRES0 = 0x20;
-	*CMU_OSCENCMD = (1<<6); // Enable LFRCO
-	*CMU_HFCORECLKEN0 |= (1<<4); // Enable clock for Low Energey pheripherals
-	*LETIMER0_CTRL |= (1<<9); // Compare topvalue to LETIMER0_TOP
-	*CMU_LFACLKEN0 |= (1<<2); // Enable LEtimer0
 	
-	*LETIMER0_IEN = 1; // Enable LETimer0 interrupt
-	*LETIMER0_CMD = 1; // Enalbe LETimer0
-	*/
 }
 
 
