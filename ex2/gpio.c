@@ -16,8 +16,8 @@ void setupGPIO()
   *GPIO_PA_MODEH = 0x55555555; /* set pins A8-15 as output */
   *GPIO_PA_DOUT = 0xFF00; /* turn on LEDs D4-D8 (LEDs are active low) */
 
-  *GPIO_PC_MODEL = 0x22222222;
-  *GPIO_PC_DOUT = 0xFF;
+  *GPIO_PC_MODEL = 0x22222222; // set pins 0-7 to input
+  *GPIO_PC_DOUT = 0xFF;		// Enable pull-up resistors
   
 
 
