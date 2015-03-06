@@ -14,7 +14,7 @@
   
   
        
-/* Declaration of peripheral setup functions */         
+/* Declaration of peripheral setup functions */          
 void setupTimer(uint32_t period);  
 void stopDAC(); 
 void setupNVIC();  

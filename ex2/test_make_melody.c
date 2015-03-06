@@ -18,8 +18,8 @@ int mcglength= 24576;
 
 void control_music(uint32_t inn)
 {	startDAC();
-	const uint16_t *song; // vektor med sangene
-	  int songlength; // må lages i sound filene
+	const uint16_t *song; // 
+	  int songlength; // 
 	if(isFinished)
 {
 	switch(inn){
@@ -31,10 +31,7 @@ void control_music(uint32_t inn)
 			break;
 	
 		case 2:
-			/*
-			song= mcg;
-			songlength= &mcglength;
-			*/
+			
 			song = Beep2;
 			songlength = Beep2_length;
 			
@@ -50,10 +47,7 @@ void control_music(uint32_t inn)
 
 
 		default:
-		/*
-			song = Beep1;
-			songlength= &Beep1_length;
-		*/
+		
 			
 			stopDAC();
 			isFinished=true;
@@ -64,7 +58,7 @@ void control_music(uint32_t inn)
 }
 	
 	if ( counter > songlength){
-		*GPIO_PA_DOUT= 0xF0<<8;
+		*GPIO_PA_DOUT= 0xFF<<8;
 		
 		counter = 0;
 		isFinished = true;
@@ -75,12 +69,14 @@ void control_music(uint32_t inn)
 		*ISER0=0x1802;
 		*SCR=0x6;
 	return;}
-
 		
+
+		*GPIO_PA_DOUT=0x00;		
 		*DAC0_CH0DATA = song[counter] ;
 		*DAC0_CH1DATA = song[counter] ;
 		counter++;
 		isFinished=false;
+		*ISER0 = 0;
 		*ISER0 = (1<<12);
 		return;
 	

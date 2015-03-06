@@ -127,6 +127,16 @@ switch (*GPIO_PC_DIN)
 	
 	
 		break;
+	case 0xF7:
+	*SCR=0x2;
+	setupTimer(SAMPLE_PERIOD);
+		//start_LET();
+		
+		song = 3;
+	
+	
+		break;
+
 	default:
 	song=0;
 	//stop_LET();

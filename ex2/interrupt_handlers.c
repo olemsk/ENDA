@@ -33,25 +33,7 @@ bool select_mode(uint32_t inn);
 
 
 
-/* LETIMER0 interupt handler */
-/*
-void __attribute__((interrupt)) LETIMER0_IRQHandler() {
-	*LETIMER0_IFC = 1;
-	
-	*GPIO_PA_DOUT=0x00;
-	
-  	if(var_2) {
-		*GPIO_PA_DOUT=0xF0;
-  		play_sound(find_sound(*GPIO_PC_DIN));}
-	else {
-  		*GPIO_PA_DOUT=0xFE;  
-		control_music(song);
-  		}
-	
-	*LETIMER0_IFC = 1;
-};
 
-*/
 
 
 /* TIMER1 interrupt handler */
@@ -94,12 +76,7 @@ void __attribute__ ((interrupt)) GPIO_ODD_IRQHandler()
 
 };
 
-bool select_mode(uint32_t inn)
-{
-	if(inn ==  0xFE){
-		return true;}
-  	return false;
-};
+
 
 
 void GPIO_handler()
@@ -112,7 +89,7 @@ switch (*GPIO_PC_DIN)
 	case 0xFD:
 	*SCR=0x2;
 	setupTimer(SAMPLE_PERIOD);
-		//start_LET();
+		
 		
 		song = 1;
 							
@@ -121,7 +98,7 @@ switch (*GPIO_PC_DIN)
 	case 0xFB:
 	*SCR=0x2;
 	setupTimer(SAMPLE_PERIOD);
-		//start_LET();
+		
 		
 		song = 2;
 	
@@ -130,7 +107,7 @@ switch (*GPIO_PC_DIN)
 	case 0xF7:
 	*SCR=0x2;
 	setupTimer(SAMPLE_PERIOD);
-		//start_LET();
+		
 		
 		song = 3;
 	
@@ -139,7 +116,7 @@ switch (*GPIO_PC_DIN)
 
 	default:
 	song=0;
-	//stop_LET();
+	
 	
 	break;
 

@@ -9,7 +9,7 @@
   from) runs at 14 MHz by default. Also remember that the timer counter
   registers are 16 bits.        
 */    
-/* The period between sound samp les, in clock cycles */         
+/* The period between sound samp les, in clock cycles */          
 #define   SAMPLE_PERIOD   1709       
   
   
