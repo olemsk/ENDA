@@ -10,7 +10,7 @@ Fsnew = 8192; % The sampling rate we used, can be changed
 ynew = resample(y, P, Q); % resampling
 
 % Scale
-ysc = round(4096.*ynew); % Scale and round values for 12 bit DAC, 0-4096 = 0-FFF 
+ysc = round(4095.*ynew); % Scale and round values for 12 bit DAC, 0-4095 = 0-FFF 
 
 % Make the C array as a string
 stra='const uint16_t variablename[]={'; % change variablename to fit the sound 
