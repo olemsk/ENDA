@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
 	rect.dy=0;
 	rect.width=320;
 	rect.height=240;
-	printf("TEST3\n");
+	printf("TEST4\n");
 	///////////////////////////// writing to framebuffer /////////////////////////////
 	int descr = open("/dev/fb0", O_RDWR);
 	

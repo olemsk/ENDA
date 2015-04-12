@@ -9,6 +9,11 @@
 #include <efm32gg.h>
 
 
+
+static int my_release(struct inode *inode, struct file *filp)
+static int my_open(struct inode *inode, struct file *filp)
+
+
 static struct file_operations my_fops=
 {
 	.owner = THIS_MODULE,
@@ -59,6 +64,26 @@ static int __init template_init(void)
 	printk("got mem region");
 	}
 	
+	
+
+	
+
+
+
+	/*         Setup gamepad for input            */
+	iowrite32(0x33333333, GPIO_PC_MODEL);
+	iowrite32(0xFF, GPIO_PC_DOUT);
+	iowrite32(0x22222222, GPIO_EXTIPSELL);
+	iowrite32(0xFF, GPIO_IEN);
+	iowrite32(0xFF, GPIO_IFC);
+	iowrite32(0xFF, GPIO_EXTIFALL);
+
+
+	request_irq(17, (irq_return_t)interrupt_handler, 0, "gamepad", &my_cdev);
+	request_irq(18, (irq_return_t)interrupt_handler, 0, "gamepad", &my_cdev);
+
+		
+	
 
 
 	printk("Hello World, here is your module speaking\n");
@@ -90,8 +115,54 @@ static void __exit template_cleanup(void)
 {	
 	release_mem_region(GPIO_PC_BASE, GPIO_IFC-GPIO_PA_BASE);
 	unregister_chrdev_region(&devno, 1);
+
+	free_irq(17, &driver_cdev);
+	free_irq(18, &driver_cdev);
+
 	 printk("Short life for a small module...\n");
 }
+
+
+
+static irqreturn_t interrupt_handler(int irq, void *dev_id, struct pt_regs *regs) {
+	printk(KERN_INFO "Handle interrupt\n");
+	iowrite32(0xff, GPIO_IFC);
+
+	if(async_queue) 
+	{
+		kill_fasync(&async_queue, SIGIO, POLL_IN);
+	}
+		return IRQ_HANDLED;
+}
+
+
+static int my_open(struct inode *inode, struct file *filp) {
+	printk(KERN_INFO "Opening gamepad driver.\n");
+	return 0;
+}
+
+static int my_release(struct inode *inode, struct file *filp) {
+	printk(KERN_INFO "Closing gamepad driver.\n");
+	return 0;
+}
+
+
+
+static ssize_t my_read(struct file *filp, char __user *buff,
+size_t count, loff_t *offp)
+{
+	uint32_t data = ioread32(GPIO_PC_DIN); // Reads gamepad input
+	copy_to_user(buff, &data, 1);	// Copy to buffer
+	return 1;
+}
+
+static ssize_t my_write(struct file *filp, const char __user *buff,
+size_t count, loff_t *offp)
+{
+	return 0;  // Shall not write to gamepad
+}
+
+
 
 module_init(template_init);
 module_exit(template_cleanup);

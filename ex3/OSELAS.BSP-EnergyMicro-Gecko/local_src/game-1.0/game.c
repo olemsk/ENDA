@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 	///////////////////////////// writing to framebuffer /////////////////////////////
 	int descr = open("/dev/fb0", O_RDWR);
 	
-	if(!descr)
+	lif(!descr)
 	{	
 		printf("open fail");
 		exit(1);
