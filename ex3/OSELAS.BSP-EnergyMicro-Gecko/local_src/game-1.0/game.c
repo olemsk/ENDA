@@ -12,7 +12,9 @@
  
 
 struct fb_var_screeninfo screen_info;
-int screensize_bytes;
+
+
+// int screensize_bytes;
 
 
 int main(int argc, char *argv[])
@@ -23,13 +25,12 @@ int main(int argc, char *argv[])
 	rect.dy=0;
 	rect.width=320;
 	rect.height=240;
-	printf("TEST4\n");
 	///////////////////////////// writing to framebuffer /////////////////////////////
 	int descr = open("/dev/fb0", O_RDWR);
-	
-	lif(!descr)
+	printf("descr: %d\n", descr);
+	if(descr == -1)
 	{	
-		printf("open fail");
+		printf("open fail\n");
 		exit(1);
 	}	
 
@@ -40,29 +41,33 @@ int main(int argc, char *argv[])
 	//ssize_t temp_d=write(descr1, &awda, 1);
 	
 
-	screensize_bytes = (320*240)*screen_info.bits_per_pixel/8;
+	//screensize_bytes = (320*240)*screen_info.bits_per_pixel/8;
 	int y;
 	int x;
-	 screen = (uint16_t*) mmap(NULL, screensize_bytes, PROT_READ | PROT_WRITE, MAP_SHARED, descr, 0);
-	if((int)screen == MAP_FAILED)
+	screen = (uint16_t*)mmap(NULL, 320*240*2, PROT_READ|PROT_WRITE, MAP_SHARED, descr, 0);
+	if((void*)screen == MAP_FAILED)
 	{
-		printf("screen fail");
+		printf("Screen mapping failed\n");
 		exit(1);
 	}	
 
+	//for( x = 0; x < 320; x++){
+	//	screen[320*30 + x] = 0xff00;
+	//	screen[320*40 + x] = 0x0ff0;
+	//	screen[320*50 + x] = 0x00ff;
+	//}
 
-	for( y = 0; y < 300; y++)
+	for( y = 150; y < 220; y++)
 	{	
-	for( x = 1; x < 221; x++)
-	{
-		screen[240*y + x] = 0xffff; 
-	
-
-
+		for( x = 200; x < 300; x++)
+		{
+			screen[340*y + x] = 0x00ff; 
+		}	
 	}
-	}
-	
+
 	ioctl(descr, 0x4680, &rect);
+
+	refresh_screen(descr, screen);
 /*
 	screen[240*100 + 100] = 0xffff; 
 	struct fb_copyarea rect;
@@ -73,10 +78,27 @@ int main(int argc, char *argv[])
 	ioctl(descr, 0x4680, &rect);
 */	
 	
-	int temp_a=close(descr);
+	//int temp_a=close(descr);
+	close(descr);
 	//int temp_b=close(descr1);
 
-	printf("CHICKENCHICKENCHICKENCHICKENCHICKENCHICKENCHICKEN\n");
+	printf("chiken\n");
 
 	exit(EXIT_SUCCESS);
+}
+
+void refresh_screen(int descr, uint16_t *screen){
+	int i;
+
+	struct fb_copyarea rect;
+	rect.dx=0;
+	rect.dy=0;
+	rect.width=320;
+	rect.height=240;
+
+	for(i = 0; i < 320*240; i++){
+		screen[i] = 0;
+		//printf("pikselnr %d har verdien: %d \n", i, screen[i]); 
+	}
+	ioctl(descr, 0x4680, &rect);
 }

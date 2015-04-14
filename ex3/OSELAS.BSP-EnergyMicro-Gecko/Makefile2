@@ -1,12 +1,12 @@
 .PHONY:game
 game:
-	ptxdist clean game
-	ptxdist go
+	ptxdist drop game compile
+	ptxdist compile game
 	
 .PHONY:gameup
 gameup:
+	ptxdist targetinstall game
 	ptxdist image root.romfs
-	ptxdist test flash-rootfs
 	
 
 .PHONY:pad
