@@ -1,13 +1,14 @@
 .PHONY:game
 game:
-	ptxdist drop game compile
-	ptxdist compile game
+	ptxdist clean driver-gamepad
+	ptxdist clean game
+	ptxdist go
 	
 .PHONY:gameup
 gameup:
-	ptxdist targetinstall game
 	ptxdist image root.romfs
 	ptxdist test flash-rootfs
+	
 
 .PHONY:pad
 pad:

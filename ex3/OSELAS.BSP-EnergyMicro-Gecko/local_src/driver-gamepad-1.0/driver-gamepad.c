@@ -1,20 +1,42 @@
 /*
  * This is a demo Linux kernel module.
  */
-
+#include <stdint.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/fs.h> 
-#include <efm32gg.h>
+#include "efm32gg.h"
+#include <linux/cdev.h>
+#include <linux/device.h>
+#include <linux/ioport.h>
+#include <asm/io.h>
+#include <linux/uaccess.h>
+#include <linux/interrupt.h>
+#include <asm/signal.h>
+#include <linux/poll.h>
+#include <asm/siginfo.h>
+#include <linux/signal.h>
+#include <linux/moduleparam.h>
+#include <linux/kdev_t.h>
+//#include <linux/types.h>
 
 
 
-static int my_release(struct inode *inode, struct file *filp)
-static int my_open(struct inode *inode, struct file *filp)
+
+static int my_release(struct inode *inode, struct file *filp);
+static int my_open(struct inode *inode, struct file *filp);
+static ssize_t my_read(struct file *filp, char __user *buff,
+size_t count, loff_t *offp);
+static ssize_t my_write(struct file *filp, const char __user *buff,
+size_t count, loff_t *offp);
+static irqreturn_t interrupt_handler(int irq, void *dev_id, struct pt_regs *regs);
+static void __exit template_cleanup(void);
 
 
-static struct file_operations my_fops=
+
+
+static struct file_operations my_fops =
 {
 	.owner = THIS_MODULE,
 	.read = my_read,
@@ -28,6 +50,7 @@ struct class *cl;
 dev_t devno;
 struct resource *resource; 
 
+char input_values[]={0,0,0,0,0,0,0,0};
 /*
  * template_init - function to insert this module into kernel space
  *
@@ -43,8 +66,14 @@ static int __init template_init(void)
 
 	int num = alloc_chrdev_region(&devno, 0,1,"gamepad");
 	
+	if(num < 0)
+	{
+		printk("Error: num < 0 ");
+	
+	}
+	
 	/* Register char device to kernel*/	
-	num = cdev_add(%my_cdev, devno, 1);
+	num = cdev_add(&my_cdev, devno, 1);
 
 
 	/* Initialize char device structure */
@@ -79,8 +108,8 @@ static int __init template_init(void)
 	iowrite32(0xFF, GPIO_EXTIFALL);
 
 
-	request_irq(17, (irq_return_t)interrupt_handler, 0, "gamepad", &my_cdev);
-	request_irq(18, (irq_return_t)interrupt_handler, 0, "gamepad", &my_cdev);
+	request_irq(17, (irq_handler_t)interrupt_handler, 0, "gamepad", &my_cdev);
+	request_irq(18, (irq_handler_t)interrupt_handler, 0, "gamepad", &my_cdev);
 
 		
 	
@@ -113,11 +142,13 @@ static int __init template_init(void)
 
 static void __exit template_cleanup(void)
 {	
+	
+	cdev_del(&my_cdev);
 	release_mem_region(GPIO_PC_BASE, GPIO_IFC-GPIO_PA_BASE);
 	unregister_chrdev_region(&devno, 1);
 
-	free_irq(17, &driver_cdev);
-	free_irq(18, &driver_cdev);
+	free_irq(17, &my_cdev);
+	free_irq(18, &my_cdev);
 
 	 printk("Short life for a small module...\n");
 }
@@ -127,12 +158,30 @@ static void __exit template_cleanup(void)
 static irqreturn_t interrupt_handler(int irq, void *dev_id, struct pt_regs *regs) {
 	printk(KERN_INFO "Handle interrupt\n");
 	iowrite32(0xff, GPIO_IFC);
+	uint32_t data = ioread32(GPIO_PC_DIN); // Reads gamepad input
+	int i;
+	for( i =0; i<8;i++)
+	{
+		if(data || 1<<i == 0)
+		 {
+			input_values[i] = 1;
+		}
+		else 
+		{
 
+		input_values[i] = 0; 
+		}
+
+	}	
+
+	/*
 	if(async_queue) 
 	{
 		kill_fasync(&async_queue, SIGIO, POLL_IN);
 	}
+		*/
 		return IRQ_HANDLED;
+		
 }
 
 
@@ -151,8 +200,8 @@ static int my_release(struct inode *inode, struct file *filp) {
 static ssize_t my_read(struct file *filp, char __user *buff,
 size_t count, loff_t *offp)
 {
-	uint32_t data = ioread32(GPIO_PC_DIN); // Reads gamepad input
-	copy_to_user(buff, &data, 1);	// Copy to buffer
+	
+	copy_to_user(buff, input_values, 8);	// Copy to buffer
 	return 1;
 }
 

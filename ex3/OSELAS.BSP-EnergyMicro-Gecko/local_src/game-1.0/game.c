@@ -9,13 +9,14 @@
 #include <sys/ioctl.h>
 #include <stdint.h>   
 #include <stdbool.h>  
- 
+//#include "efm32gg.h"
 
 struct fb_var_screeninfo screen_info;
 
 
 // int screensize_bytes;
 
+char input_values[]={0,0,0,0,0,0,0,0};
 
 int main(int argc, char *argv[])
 {	
@@ -27,14 +28,34 @@ int main(int argc, char *argv[])
 	rect.height=240;
 	///////////////////////////// writing to framebuffer /////////////////////////////
 	int descr = open("/dev/fb0", O_RDWR);
+	
+
 	printf("descr: %d\n", descr);
 	if(descr == -1)
 	{	
-		printf("open fail\n");
+		printf("open fail1\n");
 		exit(1);
 	}	
+	/*
+	int did = open("/dev/gamepad", O_RDONLY);
+	if(did == -1)
+	{	
+		printf("open fail2\n");
+		exit(1);
+	}	
+	
+
+	while(1)
+	{
+
+	ssize_t vasar = read(did, input_values, 8);
+		printf("%d \n", input_values);
+	
 
 
+	}
+
+	*/
 	//int descr1 = open("/dev/driver-gamepad", O_RDONLY);
 	
 	//ssize_t temp_ c=read(descr1, &buffer, 1);
@@ -51,32 +72,21 @@ int main(int argc, char *argv[])
 		exit(1);
 	}	
 
-	//for( x = 0; x < 320; x++){
-	//	screen[320*30 + x] = 0xff00;
-	//	screen[320*40 + x] = 0x0ff0;
-	//	screen[320*50 + x] = 0x00ff;
-	//}
+	//refresh_screen(descr, screen);
 
 	for( y = 150; y < 220; y++)
 	{	
-		for( x = 200; x < 300; x++)
+		for( x = 200; x < 250; x++)
 		{
 			screen[340*y + x] = 0x00ff; 
+			
 		}	
 	}
 
 	ioctl(descr, 0x4680, &rect);
 
-	refresh_screen(descr, screen);
-/*
-	screen[240*100 + 100] = 0xffff; 
-	struct fb_copyarea rect;
-	rect.dx=0;
-	rect.dy=0;
-	rect.width=320;
-	rect.height=240;
-	ioctl(descr, 0x4680, &rect);
-*/	
+	//refresh_screen(descr, screen);
+
 	
 	//int temp_a=close(descr);
 	close(descr);
