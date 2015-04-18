@@ -1,7 +1,7 @@
 /*
  * This is a demo Linux kernel module.
  */
-//#include <stdint.h>
+#include <stdint.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -20,17 +20,17 @@
 #include <linux/moduleparam.h>
 #include <linux/kdev_t.h>
 #include <linux/mm.h>
-#include <linux/types.h>
+//#include <linux/types.h>
 
-typedef unsigned char uint8_t;
-typedef unsigned short uint16_t;
-typedef unsigned int uint32_t;
+
 
 
 static int my_release(struct inode *inode, struct file *filp);
 static int my_open(struct inode *inode, struct file *filp);
-static ssize_t my_read(struct file *filp, char __user *buff, size_t count, loff_t *offp);
-static ssize_t my_write(struct file *filp, const char __user *buff, size_t count, loff_t *offp);
+static ssize_t my_read(struct file *filp, char __user *buff,
+size_t count, loff_t *offp);
+static ssize_t my_write(struct file *filp, const char __user *buff,
+size_t count, loff_t *offp);
 static irqreturn_t interrupt_handler(int irq, void *dev_id, struct pt_regs *regs);
 static void __exit template_cleanup(void);
 
@@ -51,10 +51,7 @@ struct class *cl;
 dev_t devno;
 struct resource *resource; 
 
-char input_value;
-
-//char input_values[]={0,0,0,0,0,0,0,0};
-
+char input_values[]={0,0,0,0,0,0,0,0};
 /*
  * template_init - function to insert this module into kernel space
  *
@@ -72,38 +69,29 @@ static int __init template_init(void)
 	
 	if(num < 0)
 	{
-		printk(KERN_INFO "Error: num < 0 ");
+		printk("Error: num < 0 ");
 	
 	}
 	
-	
+	/* Register char device to kernel*/	
+	num = cdev_add(&my_cdev, devno, 1);
 
 
 	/* Initialize char device structure */
 	cdev_init(&my_cdev, &my_fops);		//TODO
 	my_cdev.owner = THIS_MODULE;		// TODO
-	
 
-	/* Register char device to kernel*/	
-	num = cdev_add(&my_cdev, devno, 1);
-	if(num < 0)
-	{
-		printk(KERN_INFO "Error: num < 0, not added to kernel ");
-	
-	}
-	
-	
 	/* Make device visible in user space*/
 	cl = class_create(THIS_MODULE, "gamepad");	//TODO
 	device_create(cl, NULL, devno, NULL, "gamepad"); //TODO
 
 
-	resource = request_mem_region(GPIO_PC_DIN, 1, "gamepad");
+	resource = request_mem_region(GPIO_PC_BASE, GPIO_IFC - GPIO_PA_BASE, "gamepad");
 	
 	if(resource != NULL)
 	{
 
-	printk(KERN_INFO "got mem region");
+	printk("got mem region");
 	}
 	
 	
@@ -157,8 +145,7 @@ static void __exit template_cleanup(void)
 {	
 	
 	cdev_del(&my_cdev);
-	//release_mem_region(GPIO_PC_BASE, GPIO_IFC-GPIO_PA_BASE);
-	release_mem_region(GPIO_PC_DIN, 1);
+	release_mem_region(GPIO_PC_BASE, GPIO_IFC-GPIO_PA_BASE);
 	unregister_chrdev_region(&devno, 1);
 
 	free_irq(17, &my_cdev);
@@ -170,42 +157,12 @@ static void __exit template_cleanup(void)
 
 
 static irqreturn_t interrupt_handler(int irq, void *dev_id, struct pt_regs *regs) {
-	//printk(KERN_INFO "Handle interrupt\n");
-	
+	printk(KERN_INFO "Handle interrupt\n");
+	iowrite32(0xff, GPIO_IFC);
 	uint32_t data = ioread32(GPIO_PC_DIN); // Reads gamepad input
 	int i;
-	iowrite32(0xff, GPIO_IFC);
-	
-		switch (data){
-			case 0xFE:
-				input_value = 1;
-				break;
-			case 0xFD:
-				input_value = 2;
-				break;
-			case 0xFB:
-				input_value = 3;
-				break;
-			case 0xF7:
-				input_value = 4;
-				break;
-			case 0xEF:
-				input_value = 5;
-				break;
-			case 0xDF:
-				input_value = 6;
-				break;
-			case 0xBF:
-				input_value = 7;
-				break;
-			case 0x7F:
-				input_value = 8;
-				break;
-			default:
-				input_value = -1;
-				break;
-		}
-		/*
+	for( i =0; i<8;i++)
+	{
 		if(data || 1<<i == 0)
 		 {
 			input_values[i] = 1;
@@ -215,26 +172,15 @@ static irqreturn_t interrupt_handler(int irq, void *dev_id, struct pt_regs *regs
 
 		input_values[i] = 0; 
 		}
-		*/
-	
-	printk(KERN_INFO "%d\n", input_value);
-	
-	/*
-	for( i =0; i<8;i++)
-	{		
-	printk(KERN_INFO "%d",input_values[i]);
-	}*/
-	
+
+	}	
+
 	/*
 	if(async_queue) 
 	{
 		kill_fasync(&async_queue, SIGIO, POLL_IN);
 	}
-	*/	
-		
-		//printk(KERN_INFO "Handle interrupt exit\n");
-		
-		
+		*/
 		return IRQ_HANDLED;
 		
 }
@@ -256,7 +202,7 @@ static ssize_t my_read(struct file *filp, char __user *buff,
 size_t count, loff_t *offp)
 {
 	
-	copy_to_user(buff, input_value, 1);	// Copy to buffer
+	copy_to_user(buff, input_values, 8);	// Copy to buffer
 	return 1;
 }
 

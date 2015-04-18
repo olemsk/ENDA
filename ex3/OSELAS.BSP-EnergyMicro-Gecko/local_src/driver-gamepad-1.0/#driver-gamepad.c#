@@ -2,7 +2,7 @@
  * This is a demo Linux kernel module.
  */
 //#include <stdint.h>
-#include <linux/kernel.h>
+ude <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/fs.h> 
@@ -51,10 +51,7 @@ struct class *cl;
 dev_t devno;
 struct resource *resource; 
 
-char input_value;
-
-//char input_values[]={0,0,0,0,0,0,0,0};
-
+char input_values[]={0,0,0,0,0,0,0,0};
 /*
  * template_init - function to insert this module into kernel space
  *
@@ -170,42 +167,15 @@ static void __exit template_cleanup(void)
 
 
 static irqreturn_t interrupt_handler(int irq, void *dev_id, struct pt_regs *regs) {
-	//printk(KERN_INFO "Handle interrupt\n");
+	printk(KERN_INFO "Handle interrupt 12\n");
 	
-	uint32_t data = ioread32(GPIO_PC_DIN); // Reads gamepad input
-	int i;
+	//uint32_t data = ioread32(GPIO_PC_DIN); // Reads gamepad input
+	//int i;
+	printk(KERN_INFO "Handle interrupt exit\n");
 	iowrite32(0xff, GPIO_IFC);
-	
-		switch (data){
-			case 0xFE:
-				input_value = 1;
-				break;
-			case 0xFD:
-				input_value = 2;
-				break;
-			case 0xFB:
-				input_value = 3;
-				break;
-			case 0xF7:
-				input_value = 4;
-				break;
-			case 0xEF:
-				input_value = 5;
-				break;
-			case 0xDF:
-				input_value = 6;
-				break;
-			case 0xBF:
-				input_value = 7;
-				break;
-			case 0x7F:
-				input_value = 8;
-				break;
-			default:
-				input_value = -1;
-				break;
-		}
-		/*
+	/*
+	for( i =0; i<8;i++)
+	{
 		if(data || 1<<i == 0)
 		 {
 			input_values[i] = 1;
@@ -215,26 +185,19 @@ static irqreturn_t interrupt_handler(int irq, void *dev_id, struct pt_regs *regs
 
 		input_values[i] = 0; 
 		}
-		*/
-	
-	printk(KERN_INFO "%d\n", input_value);
-	
-	/*
-	for( i =0; i<8;i++)
-	{		
-	printk(KERN_INFO "%d",input_values[i]);
-	}*/
-	
+
+	}	
+
 	/*
 	if(async_queue) 
 	{
 		kill_fasync(&async_queue, SIGIO, POLL_IN);
 	}
-	*/	
+		*/
 		
-		//printk(KERN_INFO "Handle interrupt exit\n");
+		printk(KERN_INFO "Handle interrupt exit\n");
 		
-		
+		iowrite32(0xff, GPIO_IFC);
 		return IRQ_HANDLED;
 		
 }
@@ -252,15 +215,7 @@ static int my_release(struct inode *inode, struct file *filp) {
 
 
 
-static ssize_t my_read(struct file *filp, char __user *buff,
-size_t count, loff_t *offp)
-{
-	
-	copy_to_user(buff, input_value, 1);	// Copy to buffer
-	return 1;
-}
-
-static ssize_t my_write(struct file *filp, const char __user *buff,
+t char __user *buff,
 size_t count, loff_t *offp)
 {
 	return 0;  // Shall not write to gamepad
