@@ -76,11 +76,11 @@ int main(int argc, char *argv[])
 	
 	//make_obstacle(descr,screen, y_start_maker(t));
 	//test_screen(descr, screen);
-	//fake_game(descr,screen);
+	fake_game(descr,screen);
 	//ioctl(descr, 0x4680, &rect);
 	
 	//make_square(100,  descr,  screen);
-	test_control_square(descr, screen);
+	//test_control_square(descr, screen);
 	
 	close(descr);
 	
@@ -105,6 +105,19 @@ void refresh_screen(int descr, uint16_t *screen){
 	}
 	//ioctl(descr, 0x4680, &rect);
 }
+
+void refresh_area(uint16_t *screen, int x_pos, int y_pos, int w, int h){
+	int x = 0;
+	int y = 0;
+
+	for(x = x_pos; x < x_pos+w; x++){
+		for(y = y_pos; x < y_pos+h; y++){ 
+			screen[320*y + x] = 0;
+		}
+	}
+	//ioctl(descr, 0x4680, &rect);
+}
+
 
 void make_line(int descr, uint16_t *screen, int pos, uint16_t color, int y_start)
 {	
@@ -184,6 +197,9 @@ void fake_game(int descr, uint16_t *screen)
 	rect.width=320;
 	rect.height=240;
 	
+	int y=20;
+	bool up=true;
+	
 	int ystart1 = y_start_maker(temp);
 		
 	usleep(300);
@@ -255,62 +271,7 @@ void fake_game(int descr, uint16_t *screen)
 		
 		}
 		
-		ioctl(descr, 0x4680, &rect);
-	
-	 	x1 = x1-1;
-	 	x2 = x2-1;
-	 	x3 = x3-1;
-	 	x4 = x4-1;
 		
-		printf("x2-x1: %d\n", x2-x1);
-		printf("x3-x2: %d\n", x3-x2);
-		printf("x4-x3: %d\n", x4-x3);
-	
-	}
-
-}
-
-
-
-void make_square(int y_pos, int descr, uint16_t *screen)
-{
-
-
-	const int x_pos = 45;
-	int x, y;
-	refresh_screen(descr, screen);
-	struct fb_copyarea rect;
-	rect.dx=x_pos;
-	rect.dy=y_pos;
-	rect.width=11;
-	rect.height=11;
-	
-	
-	for(x=0;x<11;x++)
-	{
-		for(y=0; y<11;y++)
-		{
-			
-			screen[320*(y+y_pos) + (x+x_pos)] = 0xffff;
-		
-		}
-	
-	}
-	
-	ioctl(descr, 0x4680, &rect);
-
-}
-
-
-void test_control_square(int descr, uint16_t *screen)
-{
-
-
-	int y=20;
-	bool up=true;
-	while(1)
-	{
-	
 		if(y> 300)
 		{
 			up=false;
@@ -324,11 +285,109 @@ void test_control_square(int descr, uint16_t *screen)
 		if(up)
 		{
 			make_square(y,descr,screen);
+			
+			
+			y++;
+			
+			
+		}
+		else
+		{
+			make_square(y,descr,screen);
+			{
+			
+			y--;
+			}
+			
+			
+		
+		}
+		
+		ioctl(descr, 0x4680, &rect);
+	
+	 	x1 = x1-1;
+	 	x2 = x2-1;
+	 	x3 = x3-1;
+	 	x4 = x4-1;
+		
+		//printf("x2-x1: %d\n", x2-x1);
+		//printf("x3-x2: %d\n", x3-x2);
+		//printf("x4-x3: %d\n", x4-x3);
+	
+	}
+
+}
+
+
+
+int make_square(int y_pos, int descr, uint16_t *screen)
+{
+
+
+	const int x_pos = 45;
+	int x, y;
+	//refresh_screen(descr, screen);
+	struct fb_copyarea rect;
+	rect.dx=0;
+	rect.dy=0;
+	rect.width=320;
+	rect.height=240;
+	
+	
+	for(x=0;x<11;x++)
+	{
+		for(y=0; y<11;y++)
+		{	
+			
+			if(screen[320*(y+y_pos) + (x+x_pos)] == 0x0000)
+			{	
+				screen[320*(y+y_pos) + (x+x_pos)] = 0xffff;
+				
+			}
+			else
+			{
+			printf("Traff hinder\n");
+			}
+		
+		}
+	
+	}
+	
+	//ioctl(descr, 0x4680, &rect);
+	return 1;
+
+}
+
+
+void test_control_square(int descr, uint16_t *screen)
+{
+	//refresh_screen(descr, screen);
+	
+	int y=20;
+	bool up=true;
+	while(1)
+	{
+	
+		if(y> 280)
+		{
+			up=false;
+		}
+		
+		if(y<20)
+		{
+			up=true;
+		}
+		
+		if(up)
+		{
+			make_square(y,descr,screen);
+			//refresh_area(screen, 45, y, 10, 10);
 			y++;
 		}
 		else
 		{
 			make_square(y,descr,screen);
+			//refresh_area(screen, 45, y, 10, 10);
 			y--;
 		
 		}
