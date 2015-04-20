@@ -76,10 +76,11 @@ int main(int argc, char *argv[])
 	
 	//make_obstacle(descr,screen, y_start_maker(t));
 	//test_screen(descr, screen);
-	fake_game(descr,screen);
+	//fake_game(descr,screen);
 	//ioctl(descr, 0x4680, &rect);
-
 	
+	//make_square(100,  descr,  screen);
+	test_control_square(descr, screen);
 	
 	close(descr);
 	
@@ -172,8 +173,112 @@ void test_screen(int descr, uint16_t *screen)
 void fake_game(int descr, uint16_t *screen)
 {
 	time_t temp;
-	int x, offset1=80, offset2=160, offset3=240;
+	int x1, x2,x3,x4, offset1=80, offset2=160, offset3=240;
+	x1=315;
+	x2=315+offset1;
+	x3=315+offset2;
+	x4=315+offset3;
+	struct fb_copyarea rect;
+	rect.dx=0;
+	rect.dy=0;
+	rect.width=320;
+	rect.height=240;
 	
+	int ystart1 = y_start_maker(temp);
+		
+	usleep(300);
+		
+	int ystart2 = y_start_maker(temp); 
+	usleep(300);
+		
+	int ystart3 = y_start_maker(temp);
+	usleep(300);
+		
+	int ystart4 = y_start_maker(temp);
+		
+	
+	
+	while(1)
+	{
+		
+		
+		
+	
+		
+	
+		
+		
+		refresh_screen(descr, screen);
+		if(x1<315)
+		{
+		make_obstacle(descr, screen, ystart1, x1);
+		if(x1==1)
+		{
+			x1=315;
+			ystart1 = y_start_maker(temp);
+			
+		}
+		}
+		
+		
+		
+		if(x2 < 315)
+		{
+		make_obstacle(descr, screen, ystart2, x2);
+		if(x2==1)
+		{
+			x2=315;
+			ystart2 = y_start_maker(temp);
+			
+		}
+		}
+		
+		if(x3 < 315)
+		{
+		make_obstacle(descr, screen, ystart3, x3);
+		if(x3==1)
+		{
+			x3=315;
+			ystart3 = y_start_maker(temp);
+		}
+		}
+		
+		if(x4 < 315)
+		{
+		make_obstacle(descr, screen, ystart4, x4);
+		if(x4==1)
+		{
+			x4=315;
+			ystart4 = y_start_maker(temp);
+			
+		}
+		
+		}
+		
+		ioctl(descr, 0x4680, &rect);
+	
+	 	x1 = x1-1;
+	 	x2 = x2-1;
+	 	x3 = x3-1;
+	 	x4 = x4-1;
+		
+		printf("x2-x1: %d\n", x2-x1);
+		printf("x3-x2: %d\n", x3-x2);
+		printf("x4-x3: %d\n", x4-x3);
+	
+	}
+
+}
+
+
+
+void make_square(int y_pos, int descr, uint16_t *screen)
+{
+
+
+	const int x_pos = 45;
+	int x, y;
+	refresh_screen(descr, screen);
 	struct fb_copyarea rect;
 	rect.dx=0;
 	rect.dy=0;
@@ -181,52 +286,56 @@ void fake_game(int descr, uint16_t *screen)
 	rect.height=240;
 	
 	
+	for(x=0;x<11;x++)
+	{
+		for(y=0; y<11;y++)
+		{
+			
+			screen[320*(y+y_pos) + (x+x_pos)] = 0xffff;
+		
+		}
 	
+	}
+	
+	ioctl(descr, 0x4680, &rect);
+
+}
+
+
+void test_control_square(int descr, uint16_t *screen)
+{
+
+
+	int y=20;
+	bool up=true;
 	while(1)
 	{
-		
-		int ystart1 = y_start_maker(temp);
-		
-		usleep(300);
-		
-		int ystart2 = y_start_maker(temp); 
-		usleep(300);
-		
-		int ystart3 = y_start_maker(temp);
-		usleep(300);
-		
-		int ystart4 = y_start_maker(temp);
-		
-	for(x =305; x > 0; x--)
-	{	
 	
-		
-	
-	
-		
-		refresh_screen(descr, screen);
-		make_obstacle(descr, screen, ystart1, x);
-		if(x+offset1 < 315)
+		if(y> 300)
 		{
-		make_obstacle(descr, screen, ystart2, x+offset1);
+			up=false;
 		}
 		
-		if(x+offset2 < 315)
+		if(y<20)
 		{
-		make_obstacle(descr, screen, ystart2, x+offset2);
-		}
-		if(x+offset3 < 315)
-		{
-		make_obstacle(descr, screen, ystart2, x+offset3);
-		
+			up=true;
 		}
 		
-		ioctl(descr, 0x4680, &rect);
-	
-	} 
-	
+		if(up)
+		{
+			make_square(y,descr,screen);
+			y++;
+		}
+		else
+		{
+			make_square(y,descr,screen);
+			y--;
+		
+		}
 	
 	}
 
 }
+
+
 
