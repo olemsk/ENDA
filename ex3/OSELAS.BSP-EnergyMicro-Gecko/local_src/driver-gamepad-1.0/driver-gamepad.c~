@@ -11,7 +11,7 @@
 #include <linux/device.h>
 #include <linux/ioport.h>
 #include <asm/io.h>
-#include <linux/uaccess.h>
+#include <asm/uaccess.h>
 #include <linux/interrupt.h>
 #include <asm/signal.h>
 #include <linux/poll.h>
@@ -50,8 +50,8 @@ struct cdev my_cdev;
 struct class *cl;
 dev_t devno;
 struct resource *resource; 
-
 char input_value;
+char* input_value_ptr = &input_value;
 
 //char input_values[]={0,0,0,0,0,0,0,0};
 
@@ -128,7 +128,7 @@ static int __init template_init(void)
 	
 
 
-	printk("Hello World, here is your module speaking\n");
+	printk(KERN_INFO "Hello World, here is your module speaking\n");
 	return 0;
 
 }
@@ -178,28 +178,32 @@ static irqreturn_t interrupt_handler(int irq, void *dev_id, struct pt_regs *regs
 	
 		switch (data){
 			case 0xFE:
-				input_value = 1;
+				*input_value_ptr = 1;
 				break;
 			case 0xFD:
-				input_value = 2;
+				*input_value_ptr = 2;
 				break;
 			case 0xFB:
-				input_value = 3;
+				*input_value_ptr =3;
 				break;
 			case 0xF7:
-				input_value = 4;
+				*input_value_ptr = 4;
 				break;
 			case 0xEF:
-				input_value = 5;
+				*input_value_ptr = 5;
 				break;
 			case 0xDF:
-				input_value = 6;
+				*input_value_ptr = 6;
 				break;
 			case 0xBF:
-				input_value = 7;
+				*input_value_ptr = 7;
 				break;
 			case 0x7F:
-				input_value = 8;
+				*input_value_ptr = 8;
+				break;
+			default:
+				printk("Data: %d \n",data);
+				*input_value_ptr = 9;
 				break;
 		}
 		/*
@@ -210,12 +214,12 @@ static irqreturn_t interrupt_handler(int irq, void *dev_id, struct pt_regs *regs
 		else 
 		{
 
-		input_values[i] = 0; 
+		input_values[i] = 0; s
 		}
 		*/
 	
-	//printk(KERN_INFO "%d\n", input_value);
-	
+	printk("Input value u: %p \n", *input_value_ptr);
+	printk("Input value m: %p \n", input_value_ptr);
 	/*
 	for( i =0; i<8;i++)
 	{		
@@ -253,7 +257,8 @@ static ssize_t my_read(struct file *filp, char __user *buff,
 size_t count, loff_t *offp)
 {
 	
-	copy_to_user(buff, input_value, 1);	// Copy to buffer
+	
+	printk("Copy to user: %d \n",copy_to_user(buff, input_value_ptr, 1));	// Copy to buffer
 	return 1;
 }
 

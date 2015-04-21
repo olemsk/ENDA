@@ -9,19 +9,23 @@
 #include <sys/ioctl.h>
 #include <stdint.h>   
 #include <stdbool.h>  
+#include "gameover.h"
 //#include "efm32gg.h"
 
 struct fb_var_screeninfo screen_info;
 
 
 // int screensize_bytes;
-
-void *input_value;
+bool restart(void);
+bool direction(void);
+char input_value;
 time_t t;
-
+bool play=true;
+int did;
 
 int main(int argc, char *argv[])
 {	
+	
 	uint16_t *screen;
 	struct fb_copyarea rect;
 	rect.dx=0;
@@ -30,31 +34,36 @@ int main(int argc, char *argv[])
 	rect.height=240;
 	///////////////////////////// writing to framebuffer /////////////////////////////
 	int descr = open("/dev/fb0", O_RDWR);
-	
-
-	printf("descr: %d\n", descr);
+	int test = sizeof(array)/sizeof(array[0]);	
+	printf("lengden på array %d \n",test);	
+	printf("Storleika til input value: %d \n",sizeof(input_value));
+	printf("descr: %d\n", descr); 
 	if(descr == -1)
 	{	
 		printf("open fail1\n");
 		exit(1);
 	}	
 	
-	/*
-	int did = open("/dev/gamepad", O_RDONLY);
-	if(did == -1)
-	{	
+	
+	did = open("/dev/gamepad", O_RDONLY);
+	if(did == -1){	
 		printf("open fail2\n");
 		exit(1);
-	}	
+	} else {
+		printf("Open success\n");
+	}
+		
 	
-	while(1)
-	{
-
-	ssize_t vasar = read(did, input_value, 1);
-		printf("%d \n", (int)(*((char*)input_value)-'0'));
 	
-		sleep(2);
-
+	/*while(1){
+	ssize_t vasar = read(did, &input_value, 1);
+	sleep(2);
+	printf("Derefferering %d \n", (int)(input_value));//-'0'));
+	//printf("Som char %c \n",input_value);
+		
+	
+		printf("vasar du?: %d \n", vasar);
+	//printf("Input value: %d \n", input_value);
 	}
 	*/
 	
@@ -76,9 +85,10 @@ int main(int argc, char *argv[])
 	
 	//make_obstacle(descr,screen, y_start_maker(t));
 	//test_screen(descr, screen);
-	fake_game(descr,screen);
+	fake_game(descr,screen,array,hoyde,bredde);
 	//ioctl(descr, 0x4680, &rect);
-	
+
+	//game_over(descr, screen,array, hoyde,bredde);
 	//make_square(100,  descr,  screen);
 	//test_control_square(descr, screen);
 	
@@ -183,7 +193,7 @@ void test_screen(int descr, uint16_t *screen)
 }
 
 
-void fake_game(int descr, uint16_t *screen)
+void fake_game(int descr, uint16_t *screen,int array, int hoyde, int bredde)
 {
 	time_t temp;
 	int x1, x2,x3,x4, offset1=80, offset2=160, offset3=240;
@@ -212,9 +222,9 @@ void fake_game(int descr, uint16_t *screen)
 		
 	int ystart4 = y_start_maker(temp);
 		
+	int test;
 	
-	
-	while(1)
+	while(play)
 	{
 		
 		
@@ -282,10 +292,12 @@ void fake_game(int descr, uint16_t *screen)
 			up=true;
 		}
 		
-		if(up)
+		if(direction())
 		{
-			make_square(y,descr,screen);
-			
+			test = make_square(y,descr,screen,array,hoyde,bredde);
+			if (test == 0){ 
+				break;
+			}
 			
 			y++;
 			
@@ -293,7 +305,10 @@ void fake_game(int descr, uint16_t *screen)
 		}
 		else
 		{
-			make_square(y,descr,screen);
+			test = make_square(y,descr,screen,array,hoyde,bredde);
+			if (test == 0){ 
+				break;
+			}
 			{
 			
 			y--;
@@ -320,7 +335,7 @@ void fake_game(int descr, uint16_t *screen)
 
 
 
-int make_square(int y_pos, int descr, uint16_t *screen)
+int make_square(int y_pos, int descr, uint16_t *screen, int array, int hoyde, int bredde)
 {
 
 
@@ -346,7 +361,9 @@ int make_square(int y_pos, int descr, uint16_t *screen)
 			}
 			else
 			{
+			game_over(descr,screen,array,hoyde,bredde);
 			printf("Traff hinder\n");
+			return 0;
 			}
 		
 		}
@@ -365,7 +382,7 @@ void test_control_square(int descr, uint16_t *screen)
 	
 	int y=20;
 	bool up=true;
-	while(1)
+	while(1)  
 	{
 	
 		if(y> 280)
@@ -378,15 +395,15 @@ void test_control_square(int descr, uint16_t *screen)
 			up=true;
 		}
 		
-		if(up)
+		if(up) 
 		{
-			make_square(y,descr,screen);
+			make_square(y,descr,screen,array,hoyde,bredde);
 			//refresh_area(screen, 45, y, 10, 10);
 			y++;
 		}
-		else
+		else  
 		{
-			make_square(y,descr,screen);
+			make_square(y,descr,screen,array,hoyde,bredde);
 			//refresh_area(screen, 45, y, 10, 10);
 			y--;
 		
@@ -396,5 +413,84 @@ void test_control_square(int descr, uint16_t *screen)
 
 }
 
+void game_over(int descr, uint16_t *screen, uint32_t *array, int hoyde, int bredde) {
+	refresh_screen(descr, screen);
+	play=false;
+	struct fb_copyarea rect;
+	rect.dx=0;
+	rect.dy=0;
+	rect.width=320;
+	rect.height=240;
+	ioctl(descr, 0x4680, &rect);
+int i;
+int j;
+int x;
+for(x=0;x<hoyde*bredde;x++) {
+	//printf("Testing testing: %d \n", array[x]);	
+	if(array[x] < 0x7f) {
+		array[x] = 0xffff;
+	//	printf("Testing testing: %d \n", array[x]);	
+	} else {
+		array[x] = 0x0000;
+	//	printf("Testing testing2: %d \n", array[x]);	
+	}
+} 
+
+		
+for(i=0;i<bredde;i++) {
+	for(j=0;j<hoyde;j++) { 
+		//printf("Testing testing: %d \n", array[i+bredde*j]);		
+		screen[320*j+i] = array[i+bredde*j];
+	}
+}
+	
+
+ioctl(descr, 0x4680, &rect);
+bool wait=true;
+
+while(wait)
+{
+	if(restart())
+	{
+		wait = false;
+		play=true;
+	
+	}
+
+}
+	
+}
 
 
+bool direction(void)
+{
+
+
+	ssize_t vasar = read(did, &input_value, 1);
+	//sleep(2);
+	//printf("Derefferering %d \n", (int)(input_value));//-'0'));
+	//printf("Som char %c \n",input_value);
+		
+	
+		//printf("vasar du?: %d \n", vasar);
+	//printf("Input value: %d \n", input_value);
+	
+	if((int)(input_value) == 2)
+	{
+		return true;
+	}
+
+	return false;
+
+}
+
+bool restart(void)
+{
+	ssize_t vasar = read(did, &input_value, 1);
+	
+	if((int)(input_value) == 3)
+	{
+		return true;
+	}
+
+}
