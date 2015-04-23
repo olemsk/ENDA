@@ -55,16 +55,6 @@ int main(int argc, char *argv[])
 		
 	
 	
-	while(1){
-	ssize_t vasar = read(did, &input_value, 1);
-	sleep(2);
-	printf("Derefferering %d \n", (int)(input_value));//-'0'));
-	//printf("Som char %c \n",input_value);
-		
-	
-		printf("vasar du?: %d \n", vasar);
-	//printf("Input value: %d \n", input_value);
-	}
 
 	
 	
@@ -80,17 +70,11 @@ int main(int argc, char *argv[])
 	}	
 
 
-	//refresh_screen(descr, screen);
-
 	
-	//make_obstacle(descr,screen, y_start_maker(t));
-	//test_screen(descr, screen);
+	while(1){
 	fake_game(descr,screen,array,hoyde,bredde);
-	//ioctl(descr, 0x4680, &rect);
-
-	//game_over(descr, screen,array, hoyde,bredde);
-	//make_square(100,  descr,  screen);
-	//test_control_square(descr, screen);
+	}
+	
 	
 	close(descr);
 	
@@ -197,6 +181,7 @@ void fake_game(int descr, uint16_t *screen,int array, int hoyde, int bredde)
 {
 	time_t temp;
 	int x1, x2,x3,x4, offset1=80, offset2=160, offset3=240;
+	
 	x1=315;
 	x2=315+offset1;
 	x3=315+offset2;
@@ -207,7 +192,7 @@ void fake_game(int descr, uint16_t *screen,int array, int hoyde, int bredde)
 	rect.width=320;
 	rect.height=240;
 	
-	int y=20;
+	int y=100;
 	bool up=true;
 	
 	int ystart1 = y_start_maker(temp);
@@ -224,7 +209,7 @@ void fake_game(int descr, uint16_t *screen,int array, int hoyde, int bredde)
 		
 	int test;
 	
-	while(play)
+	while(1)
 	{
 		
 		
@@ -282,41 +267,49 @@ void fake_game(int descr, uint16_t *screen,int array, int hoyde, int bredde)
 		}
 		
 		
-		if(y> 220)
+		if(y> 230)
 		{
-			up=false;
+			y=y-3;
 		}
 		
-		if(y<20)
+		if(y<5)
 		{
-			up=true;
+			y=y+3;
 		}
 		
 		if(direction())
-		{
+		{	
+			y += 2;
 			test = make_square(y,descr,screen,array,hoyde,bredde);
-			if (test == 0){ 
+			if(test==0)
+			{
+				game_over(descr,screen,array,hoyde,bredde);
+				refresh_screen(descr, screen);
+				ioctl(descr, 0x4680, &rect);
 				break;
 			}
 			
-			y++;
 			
 			
 		}
-		else
-		{
+		if(!direction())
+		{	
+			y -= 2;
 			test = make_square(y,descr,screen,array,hoyde,bredde);
-			if (test == 0){ 
+			if(test==0)
+			{
+				game_over(descr,screen,array,hoyde,bredde);
+				refresh_screen(descr, screen);
+				ioctl(descr, 0x4680, &rect);
 				break;
 			}
-			{
 			
-			y--;
+			
 			}
 			
 			
 		
-		}
+		
 		
 		ioctl(descr, 0x4680, &rect);
 	
@@ -325,9 +318,7 @@ void fake_game(int descr, uint16_t *screen,int array, int hoyde, int bredde)
 	 	x3 = x3-1;
 	 	x4 = x4-1;
 		
-		//printf("x2-x1: %d\n", x2-x1);
-		//printf("x3-x2: %d\n", x3-x2);
-		//printf("x4-x3: %d\n", x4-x3);
+		
 	
 	}
 
@@ -359,9 +350,9 @@ int make_square(int y_pos, int descr, uint16_t *screen, int array, int hoyde, in
 				screen[320*(y+y_pos) + (x+x_pos)] = 0xffff;
 				
 			}
-			else
+			else if(screen[320*(y+y_pos) + (x+x_pos)] == 0xff00 || screen[320*(y+y_pos) + (x+x_pos)] == 0x0ff0 || screen[320*(y+y_pos) + (x+x_pos)] == 0x00ff)
 			{
-			game_over(descr,screen,array,hoyde,bredde);
+			0xff00, 0x0ff0, 0x00ff
 			printf("Traff hinder\n");
 			return 0;
 			}
@@ -370,7 +361,7 @@ int make_square(int y_pos, int descr, uint16_t *screen, int array, int hoyde, in
 	
 	}
 	
-	//ioctl(descr, 0x4680, &rect);
+	
 	return 1;
 
 }
@@ -378,7 +369,7 @@ int make_square(int y_pos, int descr, uint16_t *screen, int array, int hoyde, in
 
 void test_control_square(int descr, uint16_t *screen)
 {
-	//refresh_screen(descr, screen);
+	
 	
 	int y=20;
 	bool up=true;
@@ -398,13 +389,13 @@ void test_control_square(int descr, uint16_t *screen)
 		if(up) 
 		{
 			make_square(y,descr,screen,array,hoyde,bredde);
-			//refresh_area(screen, 45, y, 10, 10);
+			
 			y++;
 		}
 		else  
 		{
 			make_square(y,descr,screen,array,hoyde,bredde);
-			//refresh_area(screen, 45, y, 10, 10);
+			
 			y--;
 		
 		}
@@ -426,20 +417,20 @@ int i;
 int j;
 int x;
 for(x=0;x<hoyde*bredde;x++) {
-	//printf("Testing testing: %d \n", array[x]);	
+		
 	if(array[x] < 0x7f) {
 		array[x] = 0xffff;
-	//	printf("Testing testing: %d \n", array[x]);	
+		
 	} else {
 		array[x] = 0x0000;
-	//	printf("Testing testing2: %d \n", array[x]);	
+	
 	}
 } 
 
 		
 for(i=0;i<bredde;i++) {
 	for(j=0;j<hoyde;j++) { 
-		//printf("Testing testing: %d \n", array[i+bredde*j]);		
+			
 		screen[320*j+i] = array[i+bredde*j];
 	}
 }
@@ -453,7 +444,7 @@ while(wait)
 	if(restart())
 	{
 		wait = false;
-		play=true;
+		
 	
 	}
 
@@ -467,17 +458,15 @@ bool direction(void)
 
 
 	ssize_t vasar = read(did, &input_value, 1);
-	//sleep(2);
-	//printf("Derefferering %d \n", (int)(input_value));//-'0'));
-	//printf("Som char %c \n",input_value);
-		
 	
-		//printf("vasar du?: %d \n", vasar);
-	//printf("Input value: %d \n", input_value);
 	
 	if((int)(input_value) == 2)
 	{
 		return true;
+	}
+	if((int)(input_value == 4))
+	{
+		return false;
 	}
 
 	return false;
@@ -492,5 +481,6 @@ bool restart(void)
 	{
 		return true;
 	}
+	return false;
 
 }
