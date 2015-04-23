@@ -13,5 +13,5 @@ How to play the game:
   - Use button SW2 and SW4 on the gamepad to make the block move down and up.
   - If you fail the Game over screen will load. Hit SW3 on the gamepad to reset the game.
 
-GL & HF
+GL & HF =)
 -----------------------------------------------------------------------------------------------------
