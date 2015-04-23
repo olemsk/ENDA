@@ -1,7 +1,6 @@
 /*
  * This is a demo Linux kernel module.
  */
-//#include <stdint.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -53,8 +52,6 @@ struct resource *resource;
 char input_value;
 char* input_value_ptr = &input_value;
 
-//char input_values[]={0,0,0,0,0,0,0,0};
-
 /*
  * template_init - function to insert this module into kernel space
  *
@@ -76,9 +73,6 @@ static int __init template_init(void)
 	
 	}
 	
-	
-
-
 	/* Initialize char device structure */
 	cdev_init(&my_cdev, &my_fops);		//TODO
 	my_cdev.owner = THIS_MODULE;		// TODO
@@ -94,8 +88,8 @@ static int __init template_init(void)
 	
 	
 	/* Make device visible in user space*/
-	cl = class_create(THIS_MODULE, "gamepad");	//TODO
-	device_create(cl, NULL, devno, NULL, "gamepad"); //TODO
+	cl = class_create(THIS_MODULE, "gamepad");	
+	device_create(cl, NULL, devno, NULL, "gamepad");
 
 
 	resource = request_mem_region(GPIO_PC_DIN, 1, "gamepad");
@@ -134,18 +128,6 @@ static int __init template_init(void)
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 /*
  * template_cleanup - function to cleanup this module from kernel space
  *
@@ -157,7 +139,6 @@ static void __exit template_cleanup(void)
 {	
 	
 	cdev_del(&my_cdev);
-	//release_mem_region(GPIO_PC_BASE, GPIO_IFC-GPIO_PA_BASE);
 	release_mem_region(GPIO_PC_DIN, 1);
 	unregister_chrdev_region(&devno, 1);
 
@@ -170,8 +151,6 @@ static void __exit template_cleanup(void)
 
 
 static irqreturn_t interrupt_handler(int irq, void *dev_id, struct pt_regs *regs) {
-	//printk(KERN_INFO "Handle interrupt\n");
-	
 	uint32_t data = ioread32(GPIO_PC_DIN); // Reads gamepad input
 	int i;
 	iowrite32(0xff, GPIO_IFC);
@@ -202,40 +181,10 @@ static irqreturn_t interrupt_handler(int irq, void *dev_id, struct pt_regs *regs
 				*input_value_ptr = 8;
 				break;
 			default:
-				//printk("Data: %d \n",data);
 				*input_value_ptr = 9;
 				break;
 		}
-		/*
-		if(data || 1<<i == 0)
-		 {
-			input_values[i] = 1;
-		}
-		else 
-		{
-
-		input_values[i] = 0; s
-		}
-		*/
 	
-	printk("Input value u: %p \n", *input_value_ptr);
-	//printk("Input value m: %p \n", input_value_ptr);
-	/*
-	for( i =0; i<8;i++)
-	{		
-	printk(KERN_INFO "%d",input_values[i]);
-	}*/
-	
-	/*
-	if(async_queue) 
-	{
-		kill_fasync(&async_queue, SIGIO, POLL_IN);
-	}
-	*/	
-		
-		//printk(KERN_INFO "Handle interrupt exit\n");
-		
-		
 		return IRQ_HANDLED;
 		
 }
